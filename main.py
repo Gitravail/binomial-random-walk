@@ -29,7 +29,7 @@ def display_result(computed_result):
     plt.show()
 
 
-if __name__ == '__main__':
+def main():
     result = []
     for i in range(MAX_ITERATION):
         k = 0
@@ -41,3 +41,7 @@ if __name__ == '__main__':
             j += 1
         result.append(k)
     display_result(compute_result(result))
+
+
+if __name__ == '__main__':
+    main()
