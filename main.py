@@ -20,19 +20,20 @@ def generate_axes_array(heights):
     return xvalues
 
 
-def remove_out_zeros(values, heights):
-    while len(heights) and heights[0] == 0:
-        values.pop(0)
-        heights.pop(0)
-
-    while len(heights) and heights[len(heights)-1] == 0:
-        values.pop()
-        heights.pop()
+def remove_out_zeros(values_with_zeros, heights_with_zeros):
+    heights = []
+    values = []
+    i = 0
+    for height in heights_with_zeros:
+        if height != 0:
+            values.append(values_with_zeros[i])
+            heights.append(height)
+        i += 1
+    return values, heights
 
 
 def display_result(heights):
-    xvalues = generate_axes_array(heights)
-    remove_out_zeros(xvalues, heights)
+    xvalues, heights = remove_out_zeros(generate_axes_array(heights), heights)
     y_pos = np.arange(len(xvalues))
     plt.xticks(y_pos, xvalues, rotation=90, fontsize=5)
     plt.bar(y_pos, heights)
