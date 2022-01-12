@@ -2,7 +2,7 @@ import random
 import matplotlib.pyplot as plt
 import numpy as np
 
-INNER_ITERATION = 9
+INNER_ITERATION = 50
 MAX_ITERATION = 100000
 
 
@@ -24,7 +24,7 @@ def display_result(computed_result):
     possible_values = generate_axes_array()
     results = computed_result
     y_pos = np.arange(len(possible_values))
-    plt.xticks(y_pos, possible_values)
+    plt.xticks(y_pos, possible_values, rotation=90, fontsize=5)
     plt.bar(y_pos, results)
     plt.show()
 
