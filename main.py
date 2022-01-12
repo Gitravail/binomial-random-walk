@@ -37,6 +37,7 @@ def display_result(heights):
     y_pos = np.arange(len(xvalues))
     plt.xticks(y_pos, xvalues, rotation=90, fontsize=5)
     plt.bar(y_pos, heights)
+    plt.plot(y_pos, heights, color='red')
     plt.show()
 
 
