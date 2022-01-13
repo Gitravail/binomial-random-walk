@@ -4,30 +4,48 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationTool
 import numpy as np
 from tkinter import *
 import matplotlib
-from scipy.interpolate import make_interp_spline, BSpline
+from scipy.interpolate import make_interp_spline
 
 matplotlib.use('TkAgg')
 
-INNER_ITERATION = 10
-MAX_ITERATION = 10000
 
-
-class App:
+class App(Frame):
     window = Tk()
     fig = Figure(figsize=(10, 6), dpi=300)
     canvas = FigureCanvasTkAgg(fig, master=window)
     toolbar = NavigationToolbar2Tk(canvas, window)
+    right_frame = Frame(window)
+    slider_frame = Frame(right_frame)
+    button_frame = Frame(right_frame)
+    inner = Scale(slider_frame, from_=10, to=100, orient=HORIZONTAL)
+    outer = Scale(slider_frame, from_=1000, to=100000, resolution=1000, orient=HORIZONTAL)
 
     def __init__(self):
+        super().__init__()
+
         self.window.title("Binomial random walk")
         self.window.geometry("1280x720")
-        compute_button = Button(command=self.draw, master=self.window, height=2, width=10, text="Plot")
-        compute_button.pack()
+        self.right_frame.pack(side=RIGHT)
+        self.slider_frame.pack()
+        self.button_frame.pack(side=BOTTOM)
+
+        outer_label = Label(self.slider_frame, text="REPEAT")
+        inner_label = Label(self.slider_frame, text="N")
+        self.outer.pack(side=RIGHT, padx=5, pady=5)
+        outer_label.pack(side=RIGHT)
+        self.inner.pack(side=RIGHT)
+        inner_label.pack(side=RIGHT)
+
+        compute_button = Button(command=self.draw, master=self.button_frame, height=2, width=10, text="PLOT")
+        compute_button.pack(side=RIGHT)
+
         self.window.mainloop()
 
     def draw(self):
-        heights = compute_result(compute_all())
-        xvalues, heights = remove_out_zeros(generate_axes_array(), heights)
+        inner = self.inner.get()
+        outer = self.outer.get()
+        heights = compute_result(compute_all(inner, outer), inner)
+        xvalues, heights = remove_out_zeros(generate_axes_array(inner), heights)
         y_pos = np.arange(len(xvalues))
 
         self.fig.clear()
@@ -61,16 +79,16 @@ def smooth_curve(y_pos, heights):
     return y_pos_smooth, heights_smooth
 
 
-def compute_result(random_heights):
-    heights = [0] * (INNER_ITERATION * 2 + 1)
+def compute_result(random_heights, inner):
+    heights = [0] * (inner * 2 + 1)
     for result in random_heights:
-        heights[result + INNER_ITERATION] += 1
+        heights[result + inner] += 1
     return heights
 
 
-def generate_axes_array():
+def generate_axes_array(inner):
     xvalues = []
-    for i in range(-INNER_ITERATION, INNER_ITERATION + 1):
+    for i in range(-inner, inner + 1):
         xvalues.append(i)
     return xvalues
 
@@ -87,11 +105,11 @@ def remove_out_zeros(values_with_zeros, heights_with_zeros):
     return values, heights
 
 
-def compute_all():
+def compute_all(inner, outer):
     fn = []
-    for i in range(MAX_ITERATION):
+    for i in range(outer):
         k = 0
-        for j in range(INNER_ITERATION):
+        for j in range(inner):
             if random.getrandbits(1):
                 k += 1
             else:
