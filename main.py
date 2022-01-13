@@ -4,10 +4,13 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationTool
 import numpy as np
 from tkinter import *
 import matplotlib
+from scipy.interpolate import make_interp_spline, BSpline
+
 matplotlib.use('TkAgg')
 
 INNER_ITERATION = 10
 MAX_ITERATION = 10000
+
 
 class App:
     window = Tk()
@@ -34,7 +37,8 @@ class App:
         plt.set_xticks(y_pos, minor=False)
         plt.set_xticklabels(xvalues, fontdict=None, minor=False)
         plt.bar(y_pos, heights)
-        plt.plot(y_pos, heights, color='red')
+        smooth_x, smooth_y = smooth_curve(y_pos, heights)
+        plt.plot(smooth_x, smooth_y, color='red')
 
         self.canvas.get_tk_widget().destroy()
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.window)
@@ -44,6 +48,17 @@ class App:
         self.toolbar.destroy()
         self.toolbar = NavigationToolbar2Tk(self.canvas, self.window)
         self.toolbar.update()
+
+
+def smooth_curve(y_pos, heights):
+    # define x as 200 equally spaced values between the min and max of original x
+    y_pos_smooth = np.linspace(y_pos.min(), y_pos.max(), 200)
+
+    # define spline
+    spl = make_interp_spline(y_pos, heights, k=3)
+    heights_smooth = spl(y_pos_smooth)
+
+    return y_pos_smooth, heights_smooth
 
 
 def compute_result(random_heights):
