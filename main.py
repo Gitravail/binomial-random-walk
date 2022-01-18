@@ -49,15 +49,15 @@ class App(Frame):
         inner = self.inner.get()
         outer = self.outer.get()
         heights = compute_result(compute_all(inner, outer), inner)
-        xvalues, heights = remove_out_zeros(generate_axes_array(inner), heights)
-        y_pos = np.arange(len(xvalues))
+        x_values, heights = remove_out_zeros(generate_axes_array(inner), heights)
+        y_pos = np.arange(len(x_values))
 
         self.fig.clear()
         self.fig = Figure(figsize=(10, 6), dpi=100)
 
         plt = self.fig.add_subplot(111)
         plt.set_xticks(y_pos, minor=False)
-        plt.set_xticklabels(xvalues, fontdict=None, minor=False)
+        plt.set_xticklabels(x_values, fontdict=None, minor=False)
         plt.bar(y_pos, heights)
         smooth_x, smooth_y = smooth_curve(y_pos, heights)
         plt.plot(smooth_x, smooth_y, color='red')
@@ -91,10 +91,10 @@ def compute_result(random_heights, inner):
 
 
 def generate_axes_array(inner):
-    xvalues = []
+    x_values = []
     for i in range(-inner, inner + 1):
-        xvalues.append(i)
-    return xvalues
+        x_values.append(i)
+    return x_values
 
 
 def remove_out_zeros(values_with_zeros, heights_with_zeros):
