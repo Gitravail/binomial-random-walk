@@ -5,7 +5,7 @@ import numpy as np
 from tkinter import *
 import matplotlib
 from scipy.interpolate import make_interp_spline
-from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d import axes3d
 
 matplotlib.use('TkAgg')
 
@@ -49,17 +49,27 @@ class App(Frame):
     def draw(self):
         inner = self.inner.get()
         outer = self.outer.get()
-        heights = compute_result(compute_all(inner, outer), inner)
-        x_values, heights = remove_out_zeros(generate_axes_array(inner), heights)
-        y_pos = np.arange(len(x_values))
 
         self.fig.clear()
         self.fig = Figure(figsize=(10, 6), dpi=100)
 
         if self.dimension.get():
-            self.draw_2d(y_pos, x_values, heights)
+            x, y, z = axes3d.get_test_data(0.05)
+            self.draw_2d(x, y, z)
         else:
+            heights = compute_result(compute_all(inner, outer), inner)
+            x_values, heights = remove_out_zeros(generate_axes_array(inner), heights)
+            y_pos = np.arange(len(x_values))
             self.draw_1d(y_pos, x_values, heights)
+
+        self.canvas.get_tk_widget().destroy()
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.window)
+        self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
+        self.canvas.draw()
+
+        self.toolbar.destroy()
+        self.toolbar = NavigationToolbar2Tk(self.canvas, self.window)
+        self.toolbar.update()
 
     def draw_1d(self, y_pos, x_values, heights):
         plt = self.fig.add_subplot(111)
@@ -69,32 +79,9 @@ class App(Frame):
         smooth_x, smooth_y = smooth_curve(y_pos, heights)
         plt.plot(smooth_x, smooth_y, color='red')
 
-        self.canvas.get_tk_widget().destroy()
-        self.canvas = FigureCanvasTkAgg(self.fig, master=self.window)
-        self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
-        self.canvas.draw()
-
-        self.toolbar.destroy()
-        self.toolbar = NavigationToolbar2Tk(self.canvas, self.window)
-        self.toolbar.update()
-
-    def draw_2d(self, y_pos, x_values, heights):
+    def draw_2d(self, x, y, z):
         plt = self.fig.add_subplot(111, projection='3d')
-        plt.set_xticks(y_pos, minor=False)
-        plt.set_xticklabels(x_values, fontdict=None, minor=False)
-        plt.bar(y_pos, heights)
-        smooth_x, smooth_y = smooth_curve(y_pos, heights)
-        plt.plot(smooth_x, smooth_y, color='red')
-
-        self.canvas.get_tk_widget().destroy()
-        self.canvas = FigureCanvasTkAgg(self.fig, master=self.window)
-        self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
-        self.canvas.draw()
-
-        self.toolbar.destroy()
-        self.toolbar = NavigationToolbar2Tk(self.canvas, self.window)
-        self.toolbar.update()
-
+        plt.plot_wireframe(x, y, z)
 
 
 def smooth_curve(y_pos, heights):
