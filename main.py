@@ -4,8 +4,8 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationTool
 import numpy as np
 from tkinter import *
 import matplotlib
-from scipy.interpolate import make_interp_spline
 from mpl_toolkits.mplot3d import axes3d
+from scipy.interpolate import make_interp_spline
 
 matplotlib.use('TkAgg')
 
@@ -54,7 +54,11 @@ class App(Frame):
         self.fig = Figure(figsize=(10, 6), dpi=100)
 
         if self.dimension.get():
-            x, y, z = axes3d.get_test_data(0.05)
+            fn_x, fn_y = compute_x_y_values_2d(inner, outer)
+            X, Y, Z = axes3d.get_test_data(0.05)
+            print(X, Y, Z)
+            x, y, z = compute_x_y_z_2d(fn_x, fn_y)
+            print(x, y, z)
             self.draw_2d(x, y, z)
         else:
             heights = compute_result(compute_all(inner, outer), inner)
@@ -83,6 +87,8 @@ class App(Frame):
         plt = self.fig.add_subplot(111, projection='3d')
         plt.plot_wireframe(x, y, z)
 
+
+# 1 dimension
 
 def smooth_curve(y_pos, heights):
     # define x as 200 equally spaced values between the min and max of original x
@@ -124,15 +130,48 @@ def remove_out_zeros(values_with_zeros, heights_with_zeros):
 def compute_all(inner, outer):
     fn = []
     for i in range(outer):
-        k = 0
-        for j in range(inner):
-            if random.getrandbits(1):
-                k += 1
-            else:
-                k -= 1
-            j += 1
-        fn.append(k)
+        fn.append(compute_k(inner))
     return fn
+
+
+def compute_k(inner):
+    k = 0
+    for i in range(inner):
+        if random.getrandbits(1):
+            k += 1
+        else:
+            k -= 1
+    return k
+
+
+# 2 dimensions
+
+def compute_x_y_values_2d(inner, outer):
+    fn_x = []
+    fn_y = []
+    for i in range(outer):
+        fn_x.append(compute_k(inner))
+        fn_y.append(compute_k(inner))
+    return fn_x, fn_y
+
+
+def compute_x_y_z_2d(x, y):
+    d = {}
+    for i in range(0, len(x)):
+        key = (x[i], y[i])
+        if key in d:
+            d[key] += 1
+        else:
+            d[key] = 1
+    x = []
+    y = []
+    z = []
+    for key in sorted(d):
+        x.append(key[0])
+        y.append(key[1])
+        z.append(d[key])
+
+    return x, y, z
 
 
 def main():
