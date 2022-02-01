@@ -21,7 +21,7 @@ class App(Frame):
     button_frame = Frame(right_frame)
     inner = Scale(slider_frame, from_=10, to=100, orient=HORIZONTAL)
     outer = Scale(slider_frame, from_=1000, to=100000, resolution=1000, orient=HORIZONTAL)
-    dimension_check = Checkbutton(button_frame, text="3D view", variable=dimension, onvalue=1,
+    dimension_check = Checkbutton(button_frame, text="2D", variable=dimension, onvalue=1,
                                   offvalue=0, width=20, height=5)
 
     def __init__(self):
