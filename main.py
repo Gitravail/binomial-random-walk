@@ -83,6 +83,7 @@ class App(Frame):
 
     def draw_2d(self, x, y, z):
         plt = self.fig.add_subplot(111, projection='3d')
+        print(x.shape, y.shape, z.shape)
         plt.plot_wireframe(x, y, z)
 
 
@@ -186,11 +187,12 @@ def compute_matrix_2d(x, y, d):
         ys = mx.shape[0]
         xs = mx.shape[1]
         mz = np.zeros((ys, xs))
-        current = 0
         for i in range(ys):
             for j in range(xs):
-                if (j, i) in d:
-                    current = d.get((mx.item((i, j)), my.item((i, j))))
+                mxi = mx.item((i, j))
+                myi = my.item((i, j))
+                if (mxi, myi) in d:
+                    current = d.get((mxi, myi))
                     mz.itemset((i, j), current)
         return mx, my, mz
 
