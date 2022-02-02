@@ -1,5 +1,7 @@
-import random
+# Author : Raphael Tournafond
 
+# imports
+import random
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 import numpy as np
@@ -10,17 +12,21 @@ from scipy.interpolate import make_interp_spline
 matplotlib.use('TkAgg')
 
 
+# App class that manage the overall app logic
 class App(Frame):
-    window = Tk()
+    window = Tk()  # main window
+    # plot area
     fig = Figure(figsize=(10, 6), dpi=300)
     canvas = FigureCanvasTkAgg(fig, master=window)
     toolbar = NavigationToolbar2Tk(canvas, window)
-    dimension = IntVar()
+    # control panel
     right_frame = Frame(window)
     slider_frame = Frame(right_frame)
     button_frame = Frame(right_frame)
     inner = Scale(slider_frame, from_=10, to=100, orient=HORIZONTAL)
     outer = Scale(slider_frame, from_=1000, to=100000, resolution=1000, orient=HORIZONTAL)
+    # current dimension (1D or 2D)
+    dimension = IntVar()
     dimension_check = Checkbutton(button_frame, text="2D", variable=dimension, onvalue=1,
                                   offvalue=0, width=20, height=5)
 
