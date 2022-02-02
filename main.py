@@ -107,6 +107,7 @@ class App(Frame):
 
 # 1 dimension
 
+# compute the interpolated curve
 def smooth_curve(y_pos, heights):
     # define x as 200 equally spaced values between the min and max of original x
     y_pos_smooth = np.linspace(y_pos.min(), y_pos.max(), 200)
@@ -118,6 +119,7 @@ def smooth_curve(y_pos, heights):
     return y_pos_smooth, heights_smooth
 
 
+# put the heights result according to the sorted coordinates
 def compute_result(random_heights, inner):
     heights = [0] * (inner * 2 + 1)
     for result in random_heights:
@@ -125,6 +127,7 @@ def compute_result(random_heights, inner):
     return heights
 
 
+# generate x axis array
 def generate_axes_array(inner):
     x_values = []
     for i in range(-inner, inner + 1):
@@ -132,6 +135,7 @@ def generate_axes_array(inner):
     return x_values
 
 
+# clean out never reached values
 def remove_out_zeros(values_with_zeros, heights_with_zeros):
     heights = []
     values = []
@@ -144,6 +148,7 @@ def remove_out_zeros(values_with_zeros, heights_with_zeros):
     return values, heights
 
 
+# compute all the random walks values
 def compute_all(inner, outer):
     fn = []
     for i in range(outer):
@@ -151,6 +156,7 @@ def compute_all(inner, outer):
     return fn
 
 
+# compute a single 1D random walk
 def compute_k(inner):
     k = 0
     for i in range(inner):
@@ -163,15 +169,18 @@ def compute_k(inner):
 
 # 2 dimensions
 
+# compute all 2D random walks
 def compute_x_y_values_2d(inner, outer):
     x = []
     y = []
     for i in range(outer):
+        # compute two random walks that will be superposed to generate a 2D walk
         x.append(compute_k(inner))
         y.append(compute_k(inner))
     return x, y
 
 
+# compute a dictionary that will store the number of times a specific coordinate is reached at the end of a walk
 def compute_d_2d(x, y):
     d = {}
     for i in range(len(x)):
@@ -183,39 +192,42 @@ def compute_d_2d(x, y):
     return d
 
 
+# compute the x, y, z matrices
 def compute_matrix_2d(x, y, d):
     # clean lists
+    # example : x = [1, -2, 3]; y = [-6, 4]
     x = sorted(list(set(x)))
     y = sorted(list(set(y)))
 
     # create x matrix
+    # [[1, -2, 3], [1, -2, 3]]
     mx = []
     for i in range(len(y)):
         mx.append(x)
     mx = np.matrix(mx)
 
     # create y matrix
+    # [[-6, -6, -6], [4, 4, 4]]
     my = []
     for i in range(len(y)):
         my.append([y[i]] * len(x))
     my = np.matrix(my)
 
     # create z matrix
-    if len(mx) > 0:
-        ys = mx.shape[0]
-        xs = mx.shape[1]
-        mz = np.zeros((ys, xs))
-        for i in range(ys):
-            for j in range(xs):
-                mxi = mx.item((i, j))
-                myi = my.item((i, j))
-                if (mxi, myi) in d:
-                    current = d.get((mxi, myi))
-                    mz.itemset((i, j), current)
-        return mx, my, mz
-
-    m_error = np.zeros((10, 10))
-    return m_error, m_error, m_error
+    # get matrix size
+    ys = mx.shape[0]
+    xs = mx.shape[1]
+    # fill a matrix with zeros (not reached)
+    mz = np.zeros((ys, xs))
+    for i in range(ys):
+        for j in range(xs):
+            mxi = mx.item((i, j))
+            myi = my.item((i, j))
+            # if coordinate has been reached
+            if (mxi, myi) in d:
+                # add it to the matrix
+                mz.itemset((i, j), d.get((mxi, myi)))
+    return mx, my, mz
 
 
 def main():
