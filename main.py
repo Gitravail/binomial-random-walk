@@ -1,10 +1,10 @@
 import random
+
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 import numpy as np
 from tkinter import *
 import matplotlib
-from mpl_toolkits.mplot3d import axes3d
 from scipy.interpolate import make_interp_spline
 
 matplotlib.use('TkAgg')
@@ -54,12 +54,10 @@ class App(Frame):
         self.fig = Figure(figsize=(10, 6), dpi=100)
 
         if self.dimension.get():
-            fn_x, fn_y = compute_x_y_values_2d(inner, outer)
-            X, Y, Z = axes3d.get_test_data(0.05)
-            print(X, Y, Z)
-            x, y, z = compute_x_y_z_2d(fn_x, fn_y)
-            print(x, y, z)
-            self.draw_2d(x, y, z)
+            x, y = compute_x_y_values_2d(inner, outer)
+            d = compute_d_2d(x, y)
+            mx, my, mz = compute_matrix_2d(x, y, d)
+            self.draw_2d(mx, my, mz)
         else:
             heights = compute_result(compute_all(inner, outer), inner)
             x_values, heights = remove_out_zeros(generate_axes_array(inner), heights)
@@ -147,31 +145,57 @@ def compute_k(inner):
 # 2 dimensions
 
 def compute_x_y_values_2d(inner, outer):
-    fn_x = []
-    fn_y = []
+    x = []
+    y = []
     for i in range(outer):
-        fn_x.append(compute_k(inner))
-        fn_y.append(compute_k(inner))
-    return fn_x, fn_y
+        x.append(compute_k(inner))
+        y.append(compute_k(inner))
+    return x, y
 
 
-def compute_x_y_z_2d(x, y):
+def compute_d_2d(x, y):
     d = {}
-    for i in range(0, len(x)):
+    for i in range(len(x)):
         key = (x[i], y[i])
         if key in d:
             d[key] += 1
         else:
             d[key] = 1
-    x = []
-    y = []
-    z = []
-    for key in sorted(d):
-        x.append(key[0])
-        y.append(key[1])
-        z.append(d[key])
+    return d
 
-    return x, y, z
+
+def compute_matrix_2d(x, y, d):
+    # clean lists
+    x = sorted(list(set(x)))
+    y = sorted(list(set(y)))
+
+    # create x matrix
+    mx = []
+    for i in range(len(y)):
+        mx.append(x)
+    mx = np.matrix(mx)
+
+    # create y matrix
+    my = []
+    for i in range(len(y)):
+        my.append([y[i]] * len(x))
+    my = np.matrix(my)
+
+    # create z matrix
+    if len(mx) > 0:
+        ys = mx.shape[0]
+        xs = mx.shape[1]
+        mz = np.zeros((ys, xs))
+        current = 0
+        for i in range(ys):
+            for j in range(xs):
+                if (j, i) in d:
+                    current = d.get((mx.item((i, j)), my.item((i, j))))
+                mz.itemset((i, j), current)
+        return mx, my, mz
+
+    m_error = np.zeros((10, 10))
+    return m_error, m_error, m_error
 
 
 def main():
