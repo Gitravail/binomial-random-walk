@@ -191,7 +191,7 @@ def compute_matrix_2d(x, y, d):
             for j in range(xs):
                 if (j, i) in d:
                     current = d.get((mx.item((i, j)), my.item((i, j))))
-                mz.itemset((i, j), current)
+                    mz.itemset((i, j), current)
         return mx, my, mz
 
     m_error = np.zeros((10, 10))
