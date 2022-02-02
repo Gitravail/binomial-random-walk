@@ -62,3 +62,6 @@ In red to the 1-D plot is added the interpolated curve to help you see the shape
 
 The button used to display the random walk outcome according to the chosen parameters.
 
+---
+
+Author: Raphaël Tournafond
