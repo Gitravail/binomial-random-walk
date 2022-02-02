@@ -33,6 +33,7 @@ class App(Frame):
     def __init__(self):
         super().__init__()
 
+        # build the window and inner frames
         self.window.title("Binomial random walk")
         self.window.geometry("1280x720")
         self.dimension_check.pack(side=LEFT)
@@ -40,56 +41,67 @@ class App(Frame):
         self.slider_frame.pack()
         self.button_frame.pack(side=BOTTOM)
 
+        # build the control panel
         outer_label = Label(self.slider_frame, text="REPEAT")
         inner_label = Label(self.slider_frame, text="N")
         self.outer.pack(side=RIGHT, padx=5, pady=5)
         outer_label.pack(side=RIGHT)
         self.inner.pack(side=RIGHT)
         inner_label.pack(side=RIGHT)
-
         compute_button = Button(command=self.draw, master=self.button_frame, height=2, width=10, text="PLOT")
         compute_button.pack(side=RIGHT)
 
         self.window.mainloop()
 
+    # method started when clicking the plot button
     def draw(self):
+        # get sliders values
         inner = self.inner.get()
         outer = self.outer.get()
 
+        # reset figure
         self.fig.clear()
         self.fig = Figure(figsize=(10, 6), dpi=100)
 
+        # if 2D
         if self.dimension.get():
             x, y = compute_x_y_values_2d(inner, outer)
             d = compute_d_2d(x, y)
             mx, my, mz = compute_matrix_2d(x, y, d)
             self.draw_2d(mx, my, mz)
+        # if 1D
         else:
             heights = compute_result(compute_all(inner, outer), inner)
             x_values, heights = remove_out_zeros(generate_axes_array(inner), heights)
             y_pos = np.arange(len(x_values))
             self.draw_1d(y_pos, x_values, heights)
 
+        # reset previous plot and redraw
         self.canvas.get_tk_widget().destroy()
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.window)
         self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
         self.canvas.draw()
 
+        # reset toolbar
         self.toolbar.destroy()
         self.toolbar = NavigationToolbar2Tk(self.canvas, self.window)
         self.toolbar.update()
 
+    # draw the 1D plot
     def draw_1d(self, y_pos, x_values, heights):
+        # draw bars
         plt = self.fig.add_subplot(111)
         plt.set_xticks(y_pos, minor=False)
         plt.set_xticklabels(x_values, fontdict=None, minor=False)
         plt.bar(y_pos, heights)
+        # add interpolated curve to the plot
         smooth_x, smooth_y = smooth_curve(y_pos, heights)
         plt.plot(smooth_x, smooth_y, color='red')
 
+    # draw the 2D plot
     def draw_2d(self, x, y, z):
+        # draw wireframe
         plt = self.fig.add_subplot(111, projection='3d')
-        print(x.shape, y.shape, z.shape)
         plt.plot_wireframe(x, y, z)
 
 
