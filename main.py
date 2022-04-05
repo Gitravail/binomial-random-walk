@@ -157,8 +157,8 @@ def compute_all(inner, outer):
 
 
 # compute a single 1D random walk
-def compute_k(inner):
-    k = 0
+def compute_k(inner, start=0):
+    k = start
     for i in range(inner):
         if random.getrandbits(1):
             k += 1
