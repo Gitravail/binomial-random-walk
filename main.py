@@ -233,6 +233,7 @@ def compute_matrix_2d(x, y, d):
 
 # Attacker -----------------------------------------------
 
+# compute the probability of an attacker to create a longer trusted chain
 def attacker_success_probability(q, z):
     p = 1.0 - q
     lam = z * (q / p)
