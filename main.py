@@ -1,6 +1,7 @@
 # Author : Raphael Tournafond
 
 # imports
+import math
 import random
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
@@ -228,6 +229,20 @@ def compute_matrix_2d(x, y, d):
                 # add it to the matrix
                 mz.itemset((i, j), d.get((mxi, myi)))
     return mx, my, mz
+
+
+# Attacker -----------------------------------------------
+
+def attacker_success_probability(q, z):
+    p = 1.0 - q
+    lam = z * (q / p)
+    s = 1.0
+    for k in range(z + 1):
+        poisson = math.exp(-lam)
+        for i in range(1, k + 1):
+            poisson *= lam / i
+        s -= poisson * (1 - math.pow(q / p, z - k))
+    return s
 
 
 def main():
