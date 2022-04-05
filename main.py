@@ -13,8 +13,10 @@ from scipy.interpolate import make_interp_spline
 matplotlib.use('TkAgg')
 
 
-# App class that manage the overall app logic
 class App(Frame):
+    """
+    App class that manage the overall app logic
+    """
     window = Tk()  # main window
     # plot area
     fig = Figure(figsize=(10, 6), dpi=300)
@@ -32,6 +34,9 @@ class App(Frame):
                                   offvalue=0, width=20, height=5)
 
     def __init__(self):
+        """
+        Init app
+        """
         super().__init__()
 
         # build the window and inner frames
@@ -54,8 +59,11 @@ class App(Frame):
 
         self.window.mainloop()
 
-    # method started when clicking the plot button
     def draw(self):
+        """
+        Draw window
+        :return: plot
+        """
         # get sliders values
         inner = self.inner.get()
         outer = self.outer.get()
@@ -88,8 +96,14 @@ class App(Frame):
         self.toolbar = NavigationToolbar2Tk(self.canvas, self.window)
         self.toolbar.update()
 
-    # draw the 1D plot
     def draw_1d(self, y_pos, x_values, heights):
+        """
+        Draw the 1D plot
+        :param y_pos: array of ordered positions
+        :param x_values: array of position number
+        :param heights: array of the height on each position
+        :return: plot
+        """
         # draw bars
         plt = self.fig.add_subplot(111)
         plt.set_xticks(y_pos, minor=False)
@@ -99,17 +113,28 @@ class App(Frame):
         smooth_x, smooth_y = smooth_curve(y_pos, heights)
         plt.plot(smooth_x, smooth_y, color='red')
 
-    # draw the 2D plot
     def draw_2d(self, x, y, z):
+        """
+        Draw the 2D plot
+        :param x: x coordinate array
+        :param y: y coordinate array
+        :param z: array of heights on coordinate (x, y)
+        :return: plot
+        """
         # draw wireframe
         plt = self.fig.add_subplot(111, projection='3d')
         plt.plot_wireframe(x, y, z)
 
 
-# 1 dimension
+# 1 dimension ----------------------------------------------
 
-# compute the interpolated curve
 def smooth_curve(y_pos, heights):
+    """
+    Compute the interpolated curve
+    :param y_pos: array of graph positions for each height
+    :param heights: heights array
+    :return: arrays of smoothed y positions and heights
+    """
     # define x as 200 equally spaced values between the min and max of original x
     y_pos_smooth = np.linspace(y_pos.min(), y_pos.max(), 200)
 
@@ -120,45 +145,69 @@ def smooth_curve(y_pos, heights):
     return y_pos_smooth, heights_smooth
 
 
-# put the heights result according to the sorted coordinates
 def compute_result(random_heights, inner):
+    """
+    Put the heights result according to the sorted coordinates
+    :param random_heights: unsorted heights result for each outer run
+    :param inner: number of inner repetitions
+    :return: summed heights in sorted array
+    """
     heights = [0] * (inner * 2 + 1)
     for result in random_heights:
         heights[result + inner] += 1
     return heights
 
 
-# generate x axis array
 def generate_axes_array(inner):
+    """
+    Generate x-axis array
+    :param inner: number of inner loop moves
+    :return: array of x values
+    """
     x_values = []
     for i in range(-inner, inner + 1):
         x_values.append(i)
     return x_values
 
 
-# clean out never reached values
 def remove_out_zeros(values_with_zeros, heights_with_zeros):
+    """
+    Clean out never reached values
+    :param values_with_zeros: values before remove the one never reached
+    :param heights_with_zeros: heights containing never reached values (height = 0 === never reached)
+    :return: cleaned array of x values and heights >= 0
+    """
     heights = []
     values = []
     i = 0
     for height in heights_with_zeros:
-        if height != 0:
+        if height != 0:  # if value reached
             values.append(values_with_zeros[i])
             heights.append(height)
         i += 1
     return values, heights
 
 
-# compute all the random walks values
 def compute_all(inner, outer):
+    """
+    Compute all the random walks values
+    :param inner: number of moves during a repetition
+    :param outer: number of repetitions
+    :return: array of every repetition end position
+    """
     fn = []
     for i in range(outer):
         fn.append(compute_k(inner))
     return fn
 
 
-# compute a single 1D random walk
 def compute_k(inner, start=0):
+    """
+    Compute a single 1D random walk
+    :param inner: number of inner tries
+    :param start: start offset
+    :return: end result after inner tries from start
+    """
     k = start
     for i in range(inner):
         if random.getrandbits(1):
@@ -170,8 +219,13 @@ def compute_k(inner, start=0):
 
 # 2 dimensions
 
-# compute all 2D random walks
 def compute_x_y_values_2d(inner, outer):
+    """
+    Compute all 2D random walks
+    :param inner: number of moves during a repetition
+    :param outer: number of repetitions
+    :return: "2D" array of every repetition end position
+    """
     x = []
     y = []
     for i in range(outer):
@@ -181,8 +235,13 @@ def compute_x_y_values_2d(inner, outer):
     return x, y
 
 
-# compute a dictionary that will store the number of times a specific coordinate is reached at the end of a walk
 def compute_d_2d(x, y):
+    """
+    Compute a dictionary that will store the number of times a specific coordinate is reached at the end of a walk
+    :param x: x-axis positions
+    :param y: y-axis positions
+    :return: dictionary associating (x, y) --> height (number of time reached)
+    """
     d = {}
     for i in range(len(x)):
         key = (x[i], y[i])
@@ -193,8 +252,14 @@ def compute_d_2d(x, y):
     return d
 
 
-# compute the x, y, z matrices
 def compute_matrix_2d(x, y, d):
+    """
+    Compute the x, y, z matrices
+    :param x: raw x-axis unsorted positions
+    :param y: raw y-axis unsorted positions
+    :param d: unsorted dictionary
+    :return: ordered and sorted x, y and z matrices (see examples)
+    """
     # clean lists
     # example : x = [1, -2, 3]; y = [-6, 4]
     x = sorted(list(set(x)))
@@ -233,13 +298,19 @@ def compute_matrix_2d(x, y, d):
 
 # Attacker -----------------------------------------------
 
-# compute the probability of an attacker to create a longer trusted chain
 def attacker_success_probability(q, z):
+    """
+    Compute the probability of an attacker to create a longer trusted chain
+    :param q: probability the attacker finds the next block
+    :param z: number of blocks behind
+    :return: probability the attacker will ever catch up from z blocks behind
+    """
     p = 1.0 - q
     lam = z * (q / p)
     s = 1.0
+    init_poisson = math.exp(-lam)
     for k in range(z + 1):
-        poisson = math.exp(-lam)
+        poisson = init_poisson  # attacker potential progress at step k
         for i in range(1, k + 1):
             poisson *= lam / i
         s -= poisson * (1 - math.pow(q / p, z - k))
@@ -247,6 +318,10 @@ def attacker_success_probability(q, z):
 
 
 def main():
+    """
+    Main function
+    :return: app
+    """
     App()
 
 
