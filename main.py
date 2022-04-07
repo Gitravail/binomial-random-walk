@@ -82,8 +82,7 @@ class App(Frame):
         else:
             heights = compute_result(compute_all(inner, outer), inner)
             x_values, heights = remove_out_zeros(generate_axes_array(inner), heights)
-            y_pos = np.arange(len(x_values))
-            self.draw_1d(y_pos, x_values, heights)
+            self.draw_1d(x_values, heights)
 
         # reset previous plot and redraw
         self.canvas.get_tk_widget().destroy()
@@ -96,16 +95,16 @@ class App(Frame):
         self.toolbar = NavigationToolbar2Tk(self.canvas, self.window)
         self.toolbar.update()
 
-    def draw_1d(self, y_pos, x_values, heights):
+    def draw_1d(self, x_values, heights):
         """
         Draw the 1D plot
-        :param y_pos: array of ordered positions
         :param x_values: array of position number
         :param heights: array of the height on each position
         :return: plot
         """
         # draw bars
         plt = self.fig.add_subplot(111)
+        y_pos = np.arange(len(x_values))
         plt.set_xticks(y_pos, minor=False)
         plt.set_xticklabels(x_values, fontdict=None, minor=False)
         plt.bar(y_pos, heights)
@@ -201,16 +200,17 @@ def compute_all(inner, outer):
     return fn
 
 
-def compute_k(inner, start=0):
+def compute_k(inner, q=0.5, z=0):
     """
     Compute a single 1D random walk
     :param inner: number of inner tries
-    :param start: start offset
+    :param q: probability trigger (probability the attacker finds the next block)
+    :param z: start offset (number of attacker's block behind)
     :return: end result after inner tries from start
     """
-    k = start
+    k = -z
     for i in range(inner):
-        if random.getrandbits(1):
+        if random.uniform(0, 1) <= q:
             k += 1
         else:
             k -= 1
