@@ -28,6 +28,9 @@ class App(Frame):
     button_frame = Frame(right_frame)
     inner = Scale(slider_frame, from_=10, to=100, orient=HORIZONTAL)
     outer = Scale(slider_frame, from_=1000, to=100000, resolution=1000, orient=HORIZONTAL)
+    attacker_frame = Frame(right_frame)
+    q = Scale(attacker_frame, from_=0.01, to=1, resolution=0.01, orient=HORIZONTAL)
+    k = Scale(attacker_frame, from_=10, to=0, orient=HORIZONTAL)
     # current dimension (1D or 2D)
     dimension = IntVar()
     dimension_check = Checkbutton(button_frame, text="2D", variable=dimension, onvalue=1,
@@ -45,6 +48,7 @@ class App(Frame):
         self.dimension_check.pack(side=LEFT)
         self.right_frame.pack(side=RIGHT)
         self.slider_frame.pack()
+        self.attacker_frame.pack()
         self.button_frame.pack(side=BOTTOM)
 
         # build the control panel
@@ -54,6 +58,12 @@ class App(Frame):
         outer_label.pack(side=RIGHT)
         self.inner.pack(side=RIGHT)
         inner_label.pack(side=RIGHT)
+        q_label = Label(self.attacker_frame, text="q")
+        k_label = Label(self.attacker_frame, text="             k")
+        self.k.pack(side=RIGHT)
+        k_label.pack(side=RIGHT)
+        self.q.pack(side=RIGHT)
+        q_label.pack(side=RIGHT)
         compute_button = Button(command=self.draw, master=self.button_frame, height=2, width=10, text="PLOT")
         compute_button.pack(side=RIGHT)
 
