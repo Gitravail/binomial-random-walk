@@ -30,7 +30,7 @@ class App(Frame):
     outer = Scale(slider_frame, from_=1000, to=100000, resolution=1000, orient=HORIZONTAL)
     attacker_frame = Frame(right_frame)
     q = Scale(attacker_frame, from_=0.01, to=1, resolution=0.01, orient=HORIZONTAL)
-    k = Scale(attacker_frame, from_=10, to=0, orient=HORIZONTAL)
+    z = Scale(attacker_frame, from_=10, to=0, orient=HORIZONTAL)
     # current dimension (1D or 2D)
     dimension = IntVar()
     dimension_check = Checkbutton(button_frame, text="2D", variable=dimension, onvalue=1,
@@ -59,9 +59,9 @@ class App(Frame):
         self.inner.pack(side=RIGHT)
         inner_label.pack(side=RIGHT)
         q_label = Label(self.attacker_frame, text="q")
-        k_label = Label(self.attacker_frame, text="             k")
-        self.k.pack(side=RIGHT)
-        k_label.pack(side=RIGHT)
+        z_label = Label(self.attacker_frame, text="             z")
+        self.z.pack(side=RIGHT)
+        z_label.pack(side=RIGHT)
         self.q.pack(side=RIGHT)
         q_label.pack(side=RIGHT)
         compute_button = Button(command=self.draw, master=self.button_frame, height=2, width=10, text="PLOT")
@@ -77,6 +77,8 @@ class App(Frame):
         # get sliders values
         inner = self.inner.get()
         outer = self.outer.get()
+        q = self.q.get()
+        z = self.z.get()
 
         # reset figure
         self.fig.clear()
@@ -84,13 +86,13 @@ class App(Frame):
 
         # if 2D
         if self.dimension.get():
-            x, y = compute_x_y_values_2d(inner, outer)
+            x, y = compute_x_y_values_2d(inner, outer, q, z)
             d = compute_d_2d(x, y)
             mx, my, mz = compute_matrix_2d(x, y, d)
             self.draw_2d(mx, my, mz)
         # if 1D
         else:
-            heights = compute_result(compute_all(inner, outer), inner)
+            heights = compute_result(compute_all(inner, outer, q, z), inner)
             x_values, heights = remove_out_zeros(generate_axes_array(inner), heights)
             self.draw_1d(x_values, heights)
 
@@ -197,20 +199,22 @@ def remove_out_zeros(values_with_zeros, heights_with_zeros):
     return values, heights
 
 
-def compute_all(inner, outer):
+def compute_all(inner, outer, q, z):
     """
     Compute all the random walks values
     :param inner: number of moves during a repetition
     :param outer: number of repetitions
+    :param q: probability trigger (probability the attacker finds the next block)
+    :param z: start offset (number of attacker's block behind)
     :return: array of every repetition end position
     """
     fn = []
     for i in range(outer):
-        fn.append(compute_k(inner))
+        fn.append(compute_k(inner, q, z))
     return fn
 
 
-def compute_k(inner, q=0.5, z=0):
+def compute_k(inner, q, z):
     """
     Compute a single 1D random walk
     :param inner: number of inner tries
@@ -229,19 +233,21 @@ def compute_k(inner, q=0.5, z=0):
 
 # 2 dimensions
 
-def compute_x_y_values_2d(inner, outer):
+def compute_x_y_values_2d(inner, outer, q, z):
     """
     Compute all 2D random walks
     :param inner: number of moves during a repetition
     :param outer: number of repetitions
+    :param q: probability trigger (probability the attacker finds the next block)
+    :param z: start offset (number of attacker's block behind)
     :return: "2D" array of every repetition end position
     """
     x = []
     y = []
     for i in range(outer):
         # compute two random walks that will be superposed to generate a 2D walk
-        x.append(compute_k(inner))
-        y.append(compute_k(inner))
+        x.append(compute_k(inner, q, z))
+        y.append(compute_k(inner, q, z))
     return x, y
 
 
