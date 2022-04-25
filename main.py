@@ -128,8 +128,8 @@ class App(Frame):
         plt.set_xticklabels(rw.getValues(), fontdict=None, minor=False)
         plt.bar(y_pos, rw.getHeights())
         # add interpolated curve to the plot
-        # smooth_x, smooth_y = smooth_curve(y_pos, rw.getHeights())
-        # plt.plot(smooth_x, smooth_y, color='red')
+        smooth_x, smooth_y = smooth_curve(y_pos, list(rw.getHeights()))
+        plt.plot(smooth_x, smooth_y, color='red')
 
     def draw_2d(self, x, y, z):
         """
