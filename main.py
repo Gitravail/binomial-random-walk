@@ -162,65 +162,6 @@ def smooth_curve(y_pos, heights):
 
     return y_pos_smooth, heights_smooth
 
-
-def compute_result(random_heights, inner):
-    """
-    Put the heights result according to the sorted coordinates
-    :param random_heights: unsorted heights result for each outer run
-    :param inner: number of inner repetitions
-    :return: summed heights in sorted array
-    """
-    heights = [0] * (inner * 2 + 1)
-    for result in random_heights:
-        heights[result + inner] += 1
-    return heights
-
-
-def generate_axes_array(inner):
-    """
-    Generate x-axis array
-    :param inner: number of inner loop moves
-    :return: array of x values
-    """
-    x_values = []
-    for i in range(-inner, inner + 1):
-        x_values.append(i)
-    return x_values
-
-
-def remove_out_zeros(values_with_zeros, heights_with_zeros):
-    """
-    Clean out never reached values
-    :param values_with_zeros: values before remove the one never reached
-    :param heights_with_zeros: heights containing never reached values (height = 0 === never reached)
-    :return: cleaned array of x values and heights >= 0
-    """
-    heights = []
-    values = []
-    i = 0
-    for height in heights_with_zeros:
-        if height != 0:  # if value reached
-            values.append(values_with_zeros[i])
-            heights.append(height)
-        i += 1
-    return values, heights
-
-
-def compute_all(inner, outer, q, z):
-    """
-    Compute all the random walks values
-    :param inner: number of moves during a repetition
-    :param outer: number of repetitions
-    :param q: probability trigger (probability the attacker finds the next block)
-    :param z: start offset (number of attacker's block behind)
-    :return: array of every repetition end position
-    """
-    fn = []
-    for i in range(outer):
-        fn.append(compute_k(inner, q, z))
-    return fn
-
-
 def compute_k(inner, q, z):
     """
     Compute a single 1D random walk
