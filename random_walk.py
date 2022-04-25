@@ -16,8 +16,19 @@ class RandomWalk:
         self.q = q
         self.z = z
 
-    def compute_heights(self):
-        return self.inner
+    def compute_stopping_points(self):
+        """
+        Compute all the random walks values
+        :param inner: number of moves during a repetition
+        :param outer: number of repetitions
+        :param q: probability trigger (probability the attacker finds the next block)
+        :param z: start offset (number of attacker's block behind)
+        :return: array of every repetition end position
+        """
+        stopping_points = []
+        for i in range(self.outer):
+            stopping_points.append(self.compute_k(self.inner, self.q, self.z))
+        return stopping_points
 
     def compute_outer(self):
         """
