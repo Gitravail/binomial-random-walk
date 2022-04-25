@@ -87,6 +87,9 @@ class App(Frame):
         self.fig.clear()
         self.fig = Figure(figsize=(10, 6), dpi=100)
 
+        rw = RandomWalk(inner, outer, q, z)
+        rw.compute()
+
         # if 2D
         if self.dimension.get():
             x, y = compute_x_y_values_2d(inner, outer, q, z)
@@ -95,12 +98,10 @@ class App(Frame):
             self.draw_2d(mx, my, mz)
         # if 1D
         else:
-            # heights = compute_result(compute_all(inner, outer, q, z), inner)
-            # x_values, heights = remove_out_zeros(generate_axes_array(inner), heights)
-            # self.draw_1d(x_values, heights)
-            rw = RandomWalk(inner, outer, q, z)
-            rw.compute()
-            self.draw_1d(rw.getValues(), rw.getHeights())
+            self.draw_1d(rw)
+
+        # kill instance
+        del rw
 
         # reset previous plot and redraw
         self.canvas.get_tk_widget().destroy()
@@ -113,7 +114,7 @@ class App(Frame):
         self.toolbar = NavigationToolbar2Tk(self.canvas, self.window)
         self.toolbar.update()
 
-    def draw_1d(self, x_values, heights):
+    def draw_1d(self, rw: RandomWalk):
         """
         Draw the 1D plot
         :param x_values: array of position number
@@ -122,12 +123,12 @@ class App(Frame):
         """
         # draw bars
         plt = self.fig.add_subplot(111)
-        y_pos = np.arange(len(x_values))
+        y_pos = np.arange(len(rw.getValues()))
         plt.set_xticks(y_pos, minor=False)
-        plt.set_xticklabels(x_values, fontdict=None, minor=False)
-        plt.bar(y_pos, heights)
+        plt.set_xticklabels(rw.getValues(), fontdict=None, minor=False)
+        plt.bar(y_pos, rw.getHeights())
         # add interpolated curve to the plot
-        # smooth_x, smooth_y = smooth_curve(y_pos, heights)
+        # smooth_x, smooth_y = smooth_curve(y_pos, rw.getHeights())
         # plt.plot(smooth_x, smooth_y, color='red')
 
     def draw_2d(self, x, y, z):
