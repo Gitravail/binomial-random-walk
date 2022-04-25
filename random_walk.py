@@ -1,3 +1,4 @@
+from array import array
 import random
 
 
@@ -15,6 +16,18 @@ class RandomWalk:
         self.outer = outer
         self.q = q
         self.z = z
+
+    def compute_values(self, stopping_points: list):
+        """
+        Generate x-axis values dictionnary with their reached times number
+        :param stopping_points: unsorted stopping points result for each outer run
+        :return: dictionnary of stop point -> number time reached
+        """
+        values = {}
+        stopping_points = stopping_points.sort()
+        for point in stopping_points:
+            values[point] += 1
+        return values
 
     def compute_stopping_points(self):
         """
