@@ -8,6 +8,7 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationTool
 import numpy as np
 from tkinter import *
 import matplotlib
+from random_walk import RandomWalk
 from scipy.interpolate import make_interp_spline
 
 matplotlib.use('TkAgg')
@@ -29,7 +30,7 @@ class App(Frame):
     inner = Scale(slider_frame, from_=10, to=100, orient=HORIZONTAL)
     outer = Scale(slider_frame, from_=1000, to=100000, resolution=1000, orient=HORIZONTAL)
     attacker_frame = Frame(right_frame)
-    q = Scale(attacker_frame, from_=0.01, to=1, resolution=0.01, orient=HORIZONTAL)
+    q = Scale(attacker_frame, from_=0.00, to=1, resolution=0.02, orient=HORIZONTAL)
     z = Scale(attacker_frame, from_=10, to=0, orient=HORIZONTAL)
     # current dimension (1D or 2D)
     dimension = IntVar()
@@ -59,7 +60,9 @@ class App(Frame):
         self.inner.pack(side=RIGHT)
         inner_label.pack(side=RIGHT)
         q_label = Label(self.attacker_frame, text="q")
+        self.q.set(0.5)
         z_label = Label(self.attacker_frame, text="             z")
+        self.z.set(0)
         self.z.pack(side=RIGHT)
         z_label.pack(side=RIGHT)
         self.q.pack(side=RIGHT)
@@ -92,9 +95,12 @@ class App(Frame):
             self.draw_2d(mx, my, mz)
         # if 1D
         else:
-            heights = compute_result(compute_all(inner, outer, q, z), inner)
-            x_values, heights = remove_out_zeros(generate_axes_array(inner), heights)
-            self.draw_1d(x_values, heights)
+            # heights = compute_result(compute_all(inner, outer, q, z), inner)
+            # x_values, heights = remove_out_zeros(generate_axes_array(inner), heights)
+            # self.draw_1d(x_values, heights)
+            rw = RandomWalk(inner, outer, q, z)
+            rw.compute()
+            self.draw_1d(rw.getValues(), rw.getHeights())
 
         # reset previous plot and redraw
         self.canvas.get_tk_widget().destroy()
@@ -121,8 +127,8 @@ class App(Frame):
         plt.set_xticklabels(x_values, fontdict=None, minor=False)
         plt.bar(y_pos, heights)
         # add interpolated curve to the plot
-        smooth_x, smooth_y = smooth_curve(y_pos, heights)
-        plt.plot(smooth_x, smooth_y, color='red')
+        # smooth_x, smooth_y = smooth_curve(y_pos, heights)
+        # plt.plot(smooth_x, smooth_y, color='red')
 
     def draw_2d(self, x, y, z):
         """
