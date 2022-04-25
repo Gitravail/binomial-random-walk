@@ -27,8 +27,8 @@ class RandomWalk:
 
     def compute(self):
         dict = self._compute_values(self._compute_stopping_points())
-        self._values = dict.keys()
-        self._heights = dict.values()
+        self._values = list(dict.keys())
+        self._heights = list(dict.values())
         return dict
 
     def _compute_values(self, stopping_points: list):
