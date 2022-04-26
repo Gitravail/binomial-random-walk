@@ -19,10 +19,10 @@ class RandomWalk:
         self._values = None
         self._heights = None
 
-    def getValues(self):
+    def get_values(self):
         return self._values
 
-    def getHeights(self):
+    def get_heights(self):
         return self._heights
 
     def compute(self):
@@ -78,3 +78,33 @@ class RandomWalk:
             else:
                 k -= 1
         return k
+
+
+class RandomWalk2D(RandomWalk):
+
+    def __init__(self, inner=10, outer=1000, q=0.5, z=0):
+        super().__init__(inner, outer, q, z)
+
+    def get_x_values(self):
+        return [x for x, y in self._values]
+
+    def get_y_values(self):
+        return [y for x, y in self._values]
+
+    def compute(self):
+        first   = super()._compute_stopping_points()
+        second  = super()._compute_stopping_points()
+        dict = self._compute_values_2d(first, second)
+        self._values = list(dict.keys())
+        self._heights = list(dict.values())
+        return dict
+
+    def _compute_values_2d(self, first: list, second: list):
+        values = {}
+        for i in range(len(first)):
+            key = (first[i], second[i])
+            if key in values:
+                values[key] += 1
+            else:
+                values[key] = 1
+        return values
