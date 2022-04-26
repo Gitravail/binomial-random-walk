@@ -32,7 +32,7 @@ class App(Frame):
     inner = Scale(slider_frame, from_=10, to=100, orient=HORIZONTAL)
     outer = Scale(slider_frame, from_=1000, to=100000, resolution=1000, orient=HORIZONTAL)
     attacker_frame = Frame(right_frame)
-    q = Scale(attacker_frame, from_=0.00, to=1, resolution=0.02, orient=HORIZONTAL)
+    q = Scale(attacker_frame, from_=0, to=1, resolution=0.02, orient=HORIZONTAL)
     z = Scale(attacker_frame, from_=10, to=0, orient=HORIZONTAL)
     # current dimension (1D or 2D)
     dimension = IntVar()
@@ -158,14 +158,15 @@ def smooth_curve(y_pos, heights):
     :param heights: heights array
     :return: arrays of smoothed y positions and heights
     """
-    # define x as 200 equally spaced values between the min and max of original x
-    y_pos_smooth = np.linspace(y_pos.min(), y_pos.max(), 200)
+    if len(y_pos) >= 4:
+        # define x as 200 equally spaced values between the min and max of original x
+        y_pos_smooth = np.linspace(y_pos.min(), y_pos.max(), 200)
 
-    # define spline
-    spl = make_interp_spline(y_pos, heights, k=3)
-    heights_smooth = spl(y_pos_smooth)
-
-    return y_pos_smooth, heights_smooth
+        # define spline
+        spl = make_interp_spline(y_pos, heights, k=3)
+        heights_smooth = spl(y_pos_smooth)
+        return y_pos_smooth, heights_smooth
+    return y_pos, heights
 
 # 2D
 
