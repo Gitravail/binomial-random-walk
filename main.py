@@ -136,7 +136,7 @@ class App(Frame):
         :param rw: RandomWalk2D Object
         :return: plot
         """
-        x, y, z = compute_matrix_2d(rw.get_x_values(), rw.get_y_values(), rw.get_heights())
+        x, y, z = compute_matrix_2d(rw.get_x_values(), rw.get_y_values(), rw.get_dict())
         # draw wireframe
         plt = self.fig.add_subplot(111, projection='3d')
         plt.plot_wireframe(x, y, z)

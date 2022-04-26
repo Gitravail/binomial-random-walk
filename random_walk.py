@@ -16,8 +16,12 @@ class RandomWalk:
         self._outer = outer
         self._q = q
         self._z = z
+        self._dict = None
         self._values = None
         self._heights = None
+
+    def get_dict(self):
+        return self._dict
 
     def get_values(self):
         return self._values
@@ -29,7 +33,7 @@ class RandomWalk:
         dict = self._compute_values(self._compute_stopping_points())
         self._values = list(dict.keys())
         self._heights = list(dict.values())
-        return dict
+        self._dict = dict
 
     def _compute_values(self, stopping_points: list):
         """
@@ -97,7 +101,7 @@ class RandomWalk2D(RandomWalk):
         dict = self._compute_values_2d(first, second)
         self._values = list(dict.keys())
         self._heights = list(dict.values())
-        return dict
+        self._dict = dict
 
     def _compute_values_2d(self, first: list, second: list):
         values = {}
