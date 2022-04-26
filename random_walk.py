@@ -35,10 +35,23 @@ class RandomWalk:
                 return i
         return None
 
+    def get_zero_or_above_value_index(self):
+        for i in range(len(self._values)):
+            if self._values[i] >= 0:
+                return i
+        return None
+
     def get_zero_height(self):
         i = self.get_zero_value_index()
         if not i == None:
             return self._heights[i]
+        return 0
+
+    def get_after_zero_height(self):
+        i = self.get_zero_or_above_value_index()
+        after_zero_heights = self._heights[i:]
+        if not i == None:
+            return max(after_zero_heights)
         return 0
 
     def compute(self):

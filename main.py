@@ -132,9 +132,9 @@ class App(Frame):
         smooth_x, smooth_y = smooth_curve(y_pos, rw.get_heights())
         plt.plot(smooth_x, smooth_y, color='red')
         # add catch up limit
-        i = rw.get_zero_value_index()
+        i = rw.get_zero_or_above_value_index()
         if not i == None:
-            h = rw.get_zero_height()
+            h = rw.get_after_zero_height()
             plt.add_patch(Rectangle((i, 0), len(rw.get_values())-i-1, h, color=(1, 0, 0, 0.2)))
 
     def draw_2d(self, rw: RandomWalk2D):
