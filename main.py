@@ -3,6 +3,7 @@
 # imports
 import math
 import random
+from turtle import color
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 import numpy as np
@@ -10,6 +11,7 @@ from tkinter import *
 import matplotlib
 from random_walk import RandomWalk, RandomWalk2D
 from scipy.interpolate import make_interp_spline
+from matplotlib.patches import Rectangle
 
 matplotlib.use('TkAgg')
 
@@ -133,7 +135,7 @@ class App(Frame):
         i = rw.get_zero_value_index()
         if not i == None:
             h = rw.get_zero_height()
-            plt.plot([0, i, i], [h, h, 0], color='green')
+            plt.add_patch(Rectangle((i, 0), len(rw.get_values())-i-1, h, color=(1, 0, 0, 0.2)))
 
     def draw_2d(self, rw: RandomWalk2D):
         """
