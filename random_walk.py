@@ -29,6 +29,18 @@ class RandomWalk:
     def get_heights(self):
         return self._heights
 
+    def get_zero_value_index(self):
+        for i in range(len(self._values)):
+            if self._values[i] == 0:
+                return i
+        return None
+
+    def get_zero_height(self):
+        i = self.get_zero_value_index()
+        if not i == None:
+            return self._heights[i]
+        return 0
+
     def compute(self):
         dict = self._compute_values(self._compute_stopping_points())
         self._values = list(dict.keys())

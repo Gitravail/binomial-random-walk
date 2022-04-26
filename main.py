@@ -129,6 +129,11 @@ class App(Frame):
         # add interpolated curve to the plot
         smooth_x, smooth_y = smooth_curve(y_pos, rw.get_heights())
         plt.plot(smooth_x, smooth_y, color='red')
+        # add catch up limit
+        i = rw.get_zero_value_index()
+        if not i == None:
+            h = rw.get_zero_height()
+            plt.plot([0, i, i], [h, h, 0], color='green')
 
     def draw_2d(self, rw: RandomWalk2D):
         """
