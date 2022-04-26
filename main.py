@@ -123,19 +123,20 @@ class App(Frame):
         :return: plot
         """
         # draw bars
+        values = rw.get_values()
+        heights = rw.get_heights()
         plt = self.fig.add_subplot(111)
-        y_pos = np.arange(len(rw.get_values()))
+        y_pos = np.arange(len(values))
         plt.set_xticks(y_pos, minor=False)
-        plt.set_xticklabels(rw.get_values(), fontdict=None, minor=False)
-        plt.bar(y_pos, rw.get_heights())
+        plt.set_xticklabels(values, fontdict=None, minor=False)
+        plt.bar(y_pos, heights)
         # add interpolated curve to the plot
-        smooth_x, smooth_y = smooth_curve(y_pos, rw.get_heights())
+        smooth_x, smooth_y = smooth_curve(y_pos, heights)
         plt.plot(smooth_x, smooth_y, color='red')
         # add catch up limit
         i = rw.get_zero_or_above_value_index()
         if not i == None:
-            h = rw.get_after_zero_height()
-            plt.add_patch(Rectangle((i, 0), len(rw.get_values())-i-1, h, color=(1, 0, 0, 0.2)))
+            plt.bar(y_pos[i:], heights[i:], color='red')
 
     def draw_2d(self, rw: RandomWalk2D):
         """
