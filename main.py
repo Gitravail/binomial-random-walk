@@ -8,7 +8,7 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationTool
 import numpy as np
 from tkinter import *
 import matplotlib
-from random_walk import RandomWalk
+from random_walk import RandomWalk, RandomWalk2D
 from scipy.interpolate import make_interp_spline
 
 matplotlib.use('TkAgg')
@@ -87,17 +87,17 @@ class App(Frame):
         self.fig.clear()
         self.fig = Figure(figsize=(10, 6), dpi=100)
 
-        rw = RandomWalk(inner, outer, q, z)
-        rw.compute()
+        
 
         # if 2D
         if self.dimension.get():
-            x, y = compute_x_y_values_2d(inner, outer, q, z)
-            d = compute_d_2d(x, y)
-            mx, my, mz = compute_matrix_2d(x, y, d)
-            self.draw_2d(mx, my, mz)
+            rw = RandomWalk2D(inner, outer, q, z)
+            rw.compute()
+            self.draw_2d(rw)
         # if 1D
         else:
+            rw = RandomWalk(inner, outer, q, z)
+            rw.compute()
             self.draw_1d(rw)
 
         # kill instance
@@ -117,34 +117,32 @@ class App(Frame):
     def draw_1d(self, rw: RandomWalk):
         """
         Draw the 1D plot
-        :param x_values: array of position number
-        :param heights: array of the height on each position
+        :param rw: RandomWalk Object
         :return: plot
         """
         # draw bars
         plt = self.fig.add_subplot(111)
-        y_pos = np.arange(len(rw.getValues()))
+        y_pos = np.arange(len(rw.get_values()))
         plt.set_xticks(y_pos, minor=False)
-        plt.set_xticklabels(rw.getValues(), fontdict=None, minor=False)
-        plt.bar(y_pos, rw.getHeights())
+        plt.set_xticklabels(rw.get_values(), fontdict=None, minor=False)
+        plt.bar(y_pos, rw.get_heights())
         # add interpolated curve to the plot
-        smooth_x, smooth_y = smooth_curve(y_pos, rw.getHeights())
+        smooth_x, smooth_y = smooth_curve(y_pos, rw.get_heights())
         plt.plot(smooth_x, smooth_y, color='red')
 
-    def draw_2d(self, x, y, z):
+    def draw_2d(self, rw: RandomWalk2D):
         """
         Draw the 2D plot
-        :param x: x coordinate array
-        :param y: y coordinate array
-        :param z: array of heights on coordinate (x, y)
+        :param rw: RandomWalk2D Object
         :return: plot
         """
+        x, y, z = compute_matrix_2d(rw.get_x_values(), rw.get_y_values(), rw.get_heights())
         # draw wireframe
         plt = self.fig.add_subplot(111, projection='3d')
         plt.plot_wireframe(x, y, z)
 
 
-# 1 dimension ----------------------------------------------
+# 1D
 
 def smooth_curve(y_pos, heights):
     """
@@ -162,59 +160,7 @@ def smooth_curve(y_pos, heights):
 
     return y_pos_smooth, heights_smooth
 
-def compute_k(inner, q, z):
-    """
-    Compute a single 1D random walk
-    :param inner: number of inner tries
-    :param q: probability trigger (probability the attacker finds the next block)
-    :param z: start offset (number of attacker's block behind)
-    :return: end result after inner tries from start
-    """
-    k = -z
-    for i in range(inner):
-        if random.uniform(0, 1) <= q:
-            k += 1
-        else:
-            k -= 1
-    return k
-
-
-# 2 dimensions
-
-def compute_x_y_values_2d(inner, outer, q, z):
-    """
-    Compute all 2D random walks
-    :param inner: number of moves during a repetition
-    :param outer: number of repetitions
-    :param q: probability trigger (probability the attacker finds the next block)
-    :param z: start offset (number of attacker's block behind)
-    :return: "2D" array of every repetition end position
-    """
-    x = []
-    y = []
-    for i in range(outer):
-        # compute two random walks that will be superposed to generate a 2D walk
-        x.append(compute_k(inner, q, z))
-        y.append(compute_k(inner, q, z))
-    return x, y
-
-
-def compute_d_2d(x, y):
-    """
-    Compute a dictionary that will store the number of times a specific coordinate is reached at the end of a walk
-    :param x: x-axis positions
-    :param y: y-axis positions
-    :return: dictionary associating (x, y) --> height (number of time reached)
-    """
-    d = {}
-    for i in range(len(x)):
-        key = (x[i], y[i])
-        if key in d:
-            d[key] += 1
-        else:
-            d[key] = 1
-    return d
-
+# 2D
 
 def compute_matrix_2d(x, y, d):
     """
