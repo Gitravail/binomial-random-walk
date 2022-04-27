@@ -31,6 +31,7 @@ class App(Frame):
     attacker_frame = Frame(right_frame)
     q = Scale(attacker_frame, from_=0, to=1, resolution=0.02, orient=HORIZONTAL)
     z = Scale(attacker_frame, from_=100, to=0, orient=HORIZONTAL)
+    values_frame = Frame(right_frame)
     # current dimension (1D or 2D)
     dimension = IntVar()
     dimension_check = Checkbutton(button_frame, text="2D", variable=dimension, onvalue=1,
@@ -49,6 +50,7 @@ class App(Frame):
         self.right_frame.pack(side=RIGHT)
         self.slider_frame.pack()
         self.attacker_frame.pack()
+        self.values_frame.pack()
         self.button_frame.pack(side=BOTTOM)
 
         # build the control panel
@@ -62,10 +64,16 @@ class App(Frame):
         self.q.set(0.5)
         z_label = Label(self.attacker_frame, text="z (%/N)")
         self.z.set(0)
-        self.z.pack(side=RIGHT)
-        z_label.pack(side=RIGHT)
-        self.q.pack(side=RIGHT)
-        q_label.pack(side=RIGHT)
+        self.z.pack(side=RIGHT, anchor='e')
+        z_label.pack(side=RIGHT, anchor='e')
+        self.q.pack(side=RIGHT, anchor='w')
+        q_label.pack(side=RIGHT, anchor='w')
+        title = Label(self.values_frame, text="Success probability results")
+        theory = Label(self.values_frame, text="Theory:")
+        observation = Label(self.values_frame, text="Obesrvation:")
+        title.pack(side=TOP, anchor='w')
+        theory.pack(side=TOP, anchor='w')
+        observation.pack(side=TOP, anchor='w')
         compute_button = Button(command=self.draw, master=self.button_frame, height=2, width=10, text="PLOT")
         compute_button.pack(side=RIGHT)
 
