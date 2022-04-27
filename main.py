@@ -46,7 +46,8 @@ class App(Frame):
         super().__init__()
 
         # build the window and inner frames
-        self.window.title("Binomial random walk")
+        self.window.title("Bitcoin random walk")
+        self.window.iconbitmap('./images/icon.ico')
         self.window.geometry("1280x720")
         self.right_frame.pack(side=RIGHT)
 

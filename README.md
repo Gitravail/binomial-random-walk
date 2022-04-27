@@ -37,7 +37,7 @@ The N slider set the value of how many **random steps** must be performed on a *
 
 A single repetition correspond to one random walk.
 
-It's value range *between 10 and 100* (with 10 step)
+It's value range *between 10 and 100* (with 1 step)
 
 #### REPEAT slider
 
@@ -46,6 +46,28 @@ The REPEAT slider set the value of how many **random walk**.
 The purpose of this slider is to average the comportment of a single N step random walk.
 
 It's value range *between 1000 and 100000* (with 1000 step)
+
+#### q slider
+
+The q slider set the value of the **probability the attacker success catching up by one block**.
+
+It's value range *between 0 and 0.5* (with 0.01 step)
+
+#### z slider
+
+The z slider set the value of how many **block behind the trusted chain the attacker is**.
+
+It's value range *between 1 and 100* (with 1 step)
+
+#### Success probabilities results
+
+The three labels shows theoritical computations in 1D of the success probability of the attacker to catch up according to *q* and *z*.
+
+The first one shows is an estimation taking into account block verification and confirmation.
+
+The second is the theoritical catching up value on the 1D random walk.
+
+The third one is the actual catching up value on the 1D random walk.
 
 #### 2D checkbox
 
@@ -56,7 +78,9 @@ Both of them are recurrent since it is guaranteed to return to the starting posi
 |---------------------------------|---------------------------------|
 | ![1-D view](images/1d-view.png) | ![2-D view](images/2d-view.png) |
 
-In red to the 1-D plot is added the interpolated curve to help you see the shape.
+In black to the 1-D plot is added the interpolated curve to help you see the shape.
+
+On both graph the red part is where the attacker managed to catch up.
 
 #### PLOT button
 
