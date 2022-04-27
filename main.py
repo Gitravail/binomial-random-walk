@@ -132,7 +132,7 @@ class App(Frame):
         plt.bar(y_pos, heights)
         # add interpolated curve to the plot
         smooth_x, smooth_y = smooth_curve(y_pos, heights)
-        plt.plot(smooth_x, smooth_y, color='red')
+        plt.plot(smooth_x, smooth_y, color='black')
         # add catch up limit
         i = rw.get_zero_or_above_value_index()
         if not i == None:
