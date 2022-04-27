@@ -89,8 +89,6 @@ class App(Frame):
         self.fig.clear()
         self.fig = Figure(figsize=(10, 6), dpi=100)
 
-        
-
         # if 2D
         if self.dimension.get():
             rw = RandomWalk2D(inner, outer, q, z)
@@ -172,28 +170,35 @@ def smooth_curve(y_pos, heights):
     return y_pos, heights
 
 def expand_matrix(m, base):
+    """
+    Expand matrix values according to a base matrix
+    :param m: the matrix to expand
+    :param base: the base matrix values are taken from (both should be same size)
+    :return: the expanded matrix
+    """
     ys = m.shape[0]
     xs = m.shape[1]
-    for i in range(ys):
-            for j in range(xs):
-                cell = m.item((i, j))
-                if not math.isnan(cell):
-                    # TOP
-                    tuple = (i-1,j)
-                    if i > 0 and math.isnan(m.item(tuple)) and base.item(tuple) != 0:
-                        m.itemset(tuple, base.item(tuple))
-                    # RIGHT
-                    tuple = (i,j+1)
-                    if j < xs-1 and math.isnan(m.item(tuple)) and base.item(tuple) != 0:
-                        m.itemset(tuple, base.item(tuple))
-                    # BOTTOM
-                    tuple = (i+1,j)
-                    if i < ys-1 and math.isnan(m.item(tuple)) and base.item(tuple) != 0:
-                        m.itemset(tuple, base.item(tuple))
-                    # LEFT
-                    tuple = (i,j-1)
-                    if j > 0 and math.isnan(m.item(tuple)) and base.item(tuple) != 0:
-                        m.itemset(tuple, base.item(tuple))
+    if ys == base.shape[0] and xs == base.shape[1]:
+        for i in range(ys):
+                for j in range(xs):
+                    cell = m.item((i, j))
+                    if not math.isnan(cell):
+                        # TOP
+                        tuple = (i-1,j)
+                        if i > 0 and math.isnan(m.item(tuple)) and base.item(tuple) != 0:
+                            m.itemset(tuple, base.item(tuple))
+                        # RIGHT
+                        tuple = (i,j+1)
+                        if j < xs-1 and math.isnan(m.item(tuple)) and base.item(tuple) != 0:
+                            m.itemset(tuple, base.item(tuple))
+                        # BOTTOM
+                        tuple = (i+1,j)
+                        if i < ys-1 and math.isnan(m.item(tuple)) and base.item(tuple) != 0:
+                            m.itemset(tuple, base.item(tuple))
+                        # LEFT
+                        tuple = (i,j-1)
+                        if j > 0 and math.isnan(m.item(tuple)) and base.item(tuple) != 0:
+                            m.itemset(tuple, base.item(tuple))
     return m
 
 
