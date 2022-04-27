@@ -152,7 +152,7 @@ class App(Frame):
         z2 = expand_matrix(z2, z)
         plt.plot_wireframe(x, y, z2, color="red")
 
-def smooth_curve(y_pos, heights):
+def smooth_curve(y_pos: list, heights: list):
     """
     Compute the interpolated curve
     :param y_pos: array of graph positions for each height
@@ -169,7 +169,7 @@ def smooth_curve(y_pos, heights):
         return y_pos_smooth, heights_smooth
     return y_pos, heights
 
-def expand_matrix(m, base):
+def expand_matrix(m: np.ndarray, base: np.ndarray):
     """
     Expand matrix values according to a base matrix
     :param m: the matrix to expand
@@ -205,7 +205,7 @@ def expand_matrix(m, base):
 
 # Attacker -----------------------------------------------
 
-def attacker_success_probability(q, z):
+def attacker_success_probability(q: float, z: int):
     """
     Compute the probability of an attacker to create a longer trusted chain
     :param q: probability the attacker finds the next block
