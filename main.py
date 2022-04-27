@@ -10,7 +10,6 @@ from tkinter import *
 import matplotlib
 from random_walk import RandomWalk, RandomWalk2D
 from scipy.interpolate import make_interp_spline
-from matplotlib.patches import Rectangle
 
 matplotlib.use('TkAgg')
 
