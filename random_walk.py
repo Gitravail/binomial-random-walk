@@ -42,6 +42,12 @@ class RandomWalk:
                 return i
         return None
 
+    def get_success(self):
+        i = self.get_zero_or_above_value_index()
+        if i:
+            return 1-((self._outer - sum(self._heights[i:])) / self._outer)
+        return 0
+
     def compute(self):
         """
         Compute the list of values and heights, and the complete dictionary
@@ -92,12 +98,15 @@ class RandomWalk:
         :return: the random walk x coordinate
         """
         k = -self._z
+        highest = k
         for _ in range(self._inner):
             if random.uniform(0, 1) <= self._q:
                 k += 1
+                if highest < k:
+                    highest = k
             else:
                 k -= 1
-        return k
+        return highest
 
 
 class RandomWalk2D(RandomWalk):

@@ -30,9 +30,10 @@ class App(Frame):
     q = Scale(right_frame, from_=0, to=0.5, resolution=0.01, orient=HORIZONTAL, length=300)
     z = Scale(right_frame, from_=100, to=0, resolution=1, orient=HORIZONTAL, length=300)
     # success probability labels
-    title = Label(right_frame, text="Success probability results")
-    theory = Label(right_frame, text="Theory:")
-    observation = Label(right_frame, text="Obesrvation:")
+    title = Label(right_frame, text="Success probability results (only in 1D)")
+    validation = Label(right_frame, text="With chain validation")
+    theory = Label(right_frame, text="Theory")
+    observation = Label(right_frame, text="Obesrvation")
     # current dimension (1D or 2D)
     dimension = IntVar()
     dimension_check = Checkbutton(right_frame, text="2D", variable=dimension, onvalue=1,
@@ -51,11 +52,13 @@ class App(Frame):
 
         # build the control panel
         outer_label = Label(self.right_frame, text="REPEAT")
+        self.outer.set(100000)
         inner_label = Label(self.right_frame, text="N")
+        self.inner.set(100)
         q_label = Label(self.right_frame, text="q")
-        self.q.set(0.5)
-        z_label = Label(self.right_frame, text="z (%/N)")
-        self.z.set(0)
+        self.q.set(0.3)
+        z_label = Label(self.right_frame, text="z")
+        self.z.set(5)
         compute_button = Button(command=self.draw, master=self.right_frame, height=2, width=10, text="PLOT")
 
         # Grid
@@ -68,10 +71,11 @@ class App(Frame):
         z_label.grid(row=3, column=0, sticky=W, pady=2)
         self.z.grid(row=3, column=1, sticky=W, pady=2)
         self.title.grid(row=4, column=0, sticky=EW, pady=2, columnspan=2)
-        self.theory.grid(row=5, column=0, sticky=W, pady=2, columnspan=2)
-        self.observation.grid(row=6, column=0, sticky=W, pady=2, columnspan=2)
-        self.dimension_check.grid(row=7, column=0, sticky=EW, pady=2)
-        compute_button.grid(row=7, column=1, sticky=W, pady=2, rowspan=2)
+        self.validation.grid(row=5, column=0, sticky=W, pady=2, columnspan=2)
+        self.theory.grid(row=6, column=0, sticky=W, pady=2, columnspan=2)
+        self.observation.grid(row=7, column=0, sticky=W, pady=2, columnspan=2)
+        self.dimension_check.grid(row=8, column=0, sticky=EW, pady=2)
+        compute_button.grid(row=9, column=1, sticky=W, pady=2, rowspan=2)
 
         self.window.mainloop()
 
@@ -84,10 +88,7 @@ class App(Frame):
         inner = self.inner.get()
         outer = self.outer.get()
         q = self.q.get()
-        z = int(inner * (self.z.get() / 100))
-
-        # update success probability labels
-        self.theory.config(text="Theory: " + str(attacker_success_probability(q, z)))
+        z = self.z.get()
 
         # reset figure
         self.fig.clear()
@@ -98,11 +99,20 @@ class App(Frame):
             rw = RandomWalk2D(inner, outer, q, z)
             rw.compute()
             self.draw_2d(rw)
+            # update success probability labels
+            self.validation.config(text="With chain validation")
+            self.theory.config(text="Theory")
+            self.observation.config(text="Observation")
         # if 1D
         else:
             rw = RandomWalk(inner, outer, q, z)
             rw.compute()
             self.draw_1d(rw)
+            # update success probability labels
+            self.validation.config(text="With chain validation: " + str(attacker_success_probability(q, z)))
+            self.theory.config(text="Theory: " + str((q/(1-q))**z))
+            self.observation.config(text="Observation: " + str(rw.get_success()))
+
 
         # kill instance
         del rw
