@@ -1,6 +1,8 @@
 from array import array
 import random
 
+import numpy as np
+
 
 class RandomWalk:
 
@@ -29,30 +31,11 @@ class RandomWalk:
     def get_heights(self):
         return self._heights
 
-    def get_zero_value_index(self):
-        for i in range(len(self._values)):
-            if self._values[i] == 0:
-                return i
-        return None
-
     def get_zero_or_above_value_index(self):
         for i in range(len(self._values)):
             if self._values[i] >= 0:
                 return i
         return None
-
-    def get_zero_height(self):
-        i = self.get_zero_value_index()
-        if not i == None:
-            return self._heights[i]
-        return 0
-
-    def get_after_zero_height(self):
-        i = self.get_zero_or_above_value_index()
-        after_zero_heights = self._heights[i:]
-        if not i == None:
-            return max(after_zero_heights)
-        return 0
 
     def compute(self):
         dict = self._compute_values(self._compute_stopping_points())
@@ -120,6 +103,12 @@ class RandomWalk2D(RandomWalk):
     def get_y_values(self):
         return [y for x, y in self._values]
 
+    def get_zero_or_above_value_index(self):
+        for i in range(len(self._values)):
+            if self._values[i][0] >= 0 and self._values[i][1] >= 0:
+                return i
+        return None
+
     def compute(self):
         first   = super()._compute_stopping_points()
         second  = super()._compute_stopping_points()
@@ -136,4 +125,5 @@ class RandomWalk2D(RandomWalk):
                 values[key] += 1
             else:
                 values[key] = 1
+        values = dict(sorted(values.items()))
         return values
