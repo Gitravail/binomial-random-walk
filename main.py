@@ -33,7 +33,7 @@ class App(Frame):
     outer = Scale(slider_frame, from_=1000, to=100000, resolution=1000, orient=HORIZONTAL)
     attacker_frame = Frame(right_frame)
     q = Scale(attacker_frame, from_=0, to=1, resolution=0.02, orient=HORIZONTAL)
-    z = Scale(attacker_frame, from_=10, to=0, orient=HORIZONTAL)
+    z = Scale(attacker_frame, from_=100, to=0, orient=HORIZONTAL)
     # current dimension (1D or 2D)
     dimension = IntVar()
     dimension_check = Checkbutton(button_frame, text="2D", variable=dimension, onvalue=1,
@@ -63,7 +63,7 @@ class App(Frame):
         inner_label.pack(side=RIGHT)
         q_label = Label(self.attacker_frame, text="q")
         self.q.set(0.5)
-        z_label = Label(self.attacker_frame, text="             z")
+        z_label = Label(self.attacker_frame, text="z (%/N)")
         self.z.set(0)
         self.z.pack(side=RIGHT)
         z_label.pack(side=RIGHT)
@@ -83,7 +83,7 @@ class App(Frame):
         inner = self.inner.get()
         outer = self.outer.get()
         q = self.q.get()
-        z = self.z.get()
+        z = int(inner * (self.z.get() / 100))
 
         # reset figure
         self.fig.clear()
