@@ -149,6 +149,44 @@ class RandomWalk2D(RandomWalk):
                     mz.itemset((i, j), self._dict.get((mxi, myi)))
         return mx, my, mz
 
+    def get_below_zero_matrix(self):
+        x, y, z = self.get_matrix()
+        # create new z matrix
+        # get matrix size
+        ys = x.shape[0]
+        xs = y.shape[1]
+        # fill a matrix with zeros (not reached)
+        new_z = np.empty((ys, xs))
+        new_z[:] = np.nan
+        for i in range(ys):
+            for j in range(xs):
+                xi = x.item((i, j))
+                yi = y.item((i, j))
+                # if below 0
+                if xi <= 0 or yi <= 0:
+                    # add it to the matrix
+                    new_z.itemset((i, j), self._dict.get((xi, yi)))
+        return new_z
+
+    def get_above_zero_matrix(self):
+        x, y, z = self.get_matrix()
+        # create new z matrix
+        # get matrix size
+        ys = x.shape[0]
+        xs = y.shape[1]
+        # fill a matrix with zeros (not reached)
+        new_z = np.empty((ys, xs))
+        new_z[:] = np.nan
+        for i in range(ys):
+            for j in range(xs):
+                xi = x.item((i, j))
+                yi = y.item((i, j))
+                # if below 0
+                if xi >= 0 and yi >= 0:
+                    # add it to the matrix
+                    new_z.itemset((i, j), self._dict.get((xi, yi)))
+        return new_z
+
     def compute(self):
         first   = super()._compute_stopping_points()
         second  = super()._compute_stopping_points()

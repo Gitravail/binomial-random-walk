@@ -147,7 +147,13 @@ class App(Frame):
         x, y, z = rw.get_matrix()
         # draw wireframe
         plt = self.fig.add_subplot(111, projection='3d')
-        plt.plot_wireframe(x, y, z)
+        # add catch up limit
+        z2 = rw.get_above_zero_matrix()
+        plt.plot_wireframe(x, y, z2, color="red")
+        z1 = rw.get_below_zero_matrix()
+        plt.plot_wireframe(x, y, z1)
+        print(z1)
+        print(z2)
 
 def smooth_curve(y_pos, heights):
     """
