@@ -144,13 +144,10 @@ class App(Frame):
         :param rw: RandomWalk2D Object
         :return: plot
         """
-        x, y, z = compute_matrix_2d(rw.get_x_values(), rw.get_y_values(), rw.get_dict())
+        x, y, z = rw.get_matrix()
         # draw wireframe
         plt = self.fig.add_subplot(111, projection='3d')
         plt.plot_wireframe(x, y, z)
-
-
-# 1D
 
 def smooth_curve(y_pos, heights):
     """
@@ -168,52 +165,6 @@ def smooth_curve(y_pos, heights):
         heights_smooth = spl(y_pos_smooth)
         return y_pos_smooth, heights_smooth
     return y_pos, heights
-
-# 2D
-
-def compute_matrix_2d(x, y, d):
-    """
-    Compute the x, y, z matrices
-    :param x: raw x-axis unsorted positions
-    :param y: raw y-axis unsorted positions
-    :param d: unsorted dictionary
-    :return: ordered and sorted x, y and z matrices (see examples)
-    """
-    # clean lists
-    # example : x = [1, -2, 3]; y = [-6, 4]
-    x = sorted(list(set(x)))
-    y = sorted(list(set(y)))
-
-    # create x matrix
-    # [[1, -2, 3], [1, -2, 3]]
-    mx = []
-    for i in range(len(y)):
-        mx.append(x)
-    mx = np.matrix(mx)
-
-    # create y matrix
-    # [[-6, -6, -6], [4, 4, 4]]
-    my = []
-    for i in range(len(y)):
-        my.append([y[i]] * len(x))
-    my = np.matrix(my)
-
-    # create z matrix
-    # get matrix size
-    ys = mx.shape[0]
-    xs = mx.shape[1]
-    # fill a matrix with zeros (not reached)
-    mz = np.zeros((ys, xs))
-    for i in range(ys):
-        for j in range(xs):
-            mxi = mx.item((i, j))
-            myi = my.item((i, j))
-            # if coordinate has been reached
-            if (mxi, myi) in d:
-                # add it to the matrix
-                mz.itemset((i, j), d.get((mxi, myi)))
-    return mx, my, mz
-
 
 # Attacker -----------------------------------------------
 

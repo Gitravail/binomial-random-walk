@@ -109,6 +109,46 @@ class RandomWalk2D(RandomWalk):
                 return i
         return None
 
+    def get_matrix(self):
+        """
+        Compute the x, y, z matrices
+        :return: ordered and sorted x, y and z matrices (see examples)
+        """
+        # clean lists
+        # example : x = [1, -2, 3]; y = [-6, 4]
+        x = sorted(list(set(self.get_x_values())))
+        y = sorted(list(set(self.get_y_values())))
+
+        # create x matrix
+        # [[1, -2, 3], [1, -2, 3]]
+        mx = []
+        for i in range(len(y)):
+            mx.append(x)
+        mx = np.matrix(mx)
+
+        # create y matrix
+        # [[-6, -6, -6], [4, 4, 4]]
+        my = []
+        for i in range(len(y)):
+            my.append([y[i]] * len(x))
+        my = np.matrix(my)
+
+        # create z matrix
+        # get matrix size
+        ys = mx.shape[0]
+        xs = mx.shape[1]
+        # fill a matrix with zeros (not reached)
+        mz = np.zeros((ys, xs))
+        for i in range(ys):
+            for j in range(xs):
+                mxi = mx.item((i, j))
+                myi = my.item((i, j))
+                # if coordinate has been reached
+                if (mxi, myi) in self._dict:
+                    # add it to the matrix
+                    mz.itemset((i, j), self._dict.get((mxi, myi)))
+        return mx, my, mz
+
     def compute(self):
         first   = super()._compute_stopping_points()
         second  = super()._compute_stopping_points()
