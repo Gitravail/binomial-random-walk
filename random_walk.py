@@ -1,4 +1,3 @@
-from array import array
 import random
 
 import numpy as np

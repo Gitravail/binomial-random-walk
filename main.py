@@ -2,7 +2,6 @@
 
 # imports
 import math
-import random
 from turtle import color
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
