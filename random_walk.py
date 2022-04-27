@@ -5,6 +5,9 @@ import numpy as np
 
 
 class RandomWalk:
+    """
+    A RandomWalk object in one dimension
+    """
 
     def __init__(self, inner=10, outer=1000, q=0.5, z=0):
         """
@@ -32,12 +35,18 @@ class RandomWalk:
         return self._heights
 
     def get_zero_or_above_value_index(self):
+        """
+        :return: the index when the value go above 0, None if don't go above
+        """
         for i in range(len(self._values)):
             if self._values[i] >= 0:
                 return i
         return None
 
     def compute(self):
+        """
+        Compute the list of values and heights, and the complete dictionary
+        """
         dict = self._compute_values(self._compute_stopping_points())
         self._values = list(dict.keys())
         self._heights = list(dict.values())
@@ -93,17 +102,36 @@ class RandomWalk:
 
 
 class RandomWalk2D(RandomWalk):
+    """
+    RandomWalk 2D extension
+    """
 
     def __init__(self, inner=10, outer=1000, q=0.5, z=0):
+        """
+        Initialise the random walk class
+        :param inner: number of moves during a repetition
+        :param outer: number of repetitions
+        :param q: probability trigger (probability the attacker finds the next block)
+        :param z: start offset (number of attacker's block behind)
+        """
         super().__init__(inner, outer, q, z)
 
     def get_x_values(self):
+        """
+        :return: the list of all the x coordinates
+        """
         return [x for x, y in self._values]
 
     def get_y_values(self):
+        """
+        :return: the list of all the y coordinates
+        """
         return [y for x, y in self._values]
 
     def get_zero_or_above_value_index(self):
+        """
+        :return: the index when the value go above (0, 0), None if don't go above
+        """
         for i in range(len(self._values)):
             if self._values[i][0] >= 0 and self._values[i][1] >= 0:
                 return i
@@ -150,6 +178,9 @@ class RandomWalk2D(RandomWalk):
         return mx, my, mz
 
     def get_below_zero_matrix(self):
+        """
+        :return: get the matrix values on corrdinates below (0, 0), example: (-4, 0), (4, -1), (-2, -8)
+        """
         x, y, z = self.get_matrix()
         # create new z matrix
         # get matrix size
@@ -169,6 +200,9 @@ class RandomWalk2D(RandomWalk):
         return new_z
 
     def get_above_zero_matrix(self):
+        """
+        :return: get the matrix values on corrdinates above (0, 0), example: (0, 0), (4, 1), (2, 0)
+        """
         x, y, z = self.get_matrix()
         # create new z matrix
         # get matrix size
@@ -188,6 +222,9 @@ class RandomWalk2D(RandomWalk):
         return new_z
 
     def compute(self):
+        """
+        Compute the list of values and heights, and the complete dictionary
+        """
         first   = super()._compute_stopping_points()
         second  = super()._compute_stopping_points()
         dict = self._compute_values_2d(first, second)
@@ -196,6 +233,12 @@ class RandomWalk2D(RandomWalk):
         self._dict = dict
 
     def _compute_values_2d(self, first: list, second: list):
+        """
+        Generate x-axis values dictionnary with their reached times number
+        :param first: unsorted stopping points result for each outer run on x axis
+        :param second: unsorted stopping points result for each outer run on y axis
+        :return: dictionnary of stop point (x, y) -> number time reached
+        """
         values = {}
         for i in range(len(first)):
             key = (first[i], second[i])
