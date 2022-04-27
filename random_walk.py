@@ -64,7 +64,7 @@ class RandomWalk:
         :return: array of every repetition end position
         """
         stopping_points = []
-        for i in range(self._outer):
+        for _ in range(self._outer):
             stopping_points.append(self._compute_k())
         return stopping_points
 
@@ -163,7 +163,7 @@ class RandomWalk2D(RandomWalk):
                 xi = x.item((i, j))
                 yi = y.item((i, j))
                 # if below 0
-                if xi <= 0 or yi <= 0:
+                if xi < 0 or yi < 0:
                     # add it to the matrix
                     new_z.itemset((i, j), self._dict.get((xi, yi)))
         return new_z

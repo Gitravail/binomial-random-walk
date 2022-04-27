@@ -147,13 +147,12 @@ class App(Frame):
         x, y, z = rw.get_matrix()
         # draw wireframe
         plt = self.fig.add_subplot(111, projection='3d')
-        # add catch up limit
-        z2 = rw.get_above_zero_matrix()
-        plt.plot_wireframe(x, y, z2, color="red")
         z1 = rw.get_below_zero_matrix()
         plt.plot_wireframe(x, y, z1)
-        print(z1)
-        print(z2)
+        # add catch up limit
+        z2 = rw.get_above_zero_matrix()
+        z2 = expand_matrix(z2, z)
+        plt.plot_wireframe(x, y, z2, color="red")
 
 def smooth_curve(y_pos, heights):
     """
@@ -171,6 +170,33 @@ def smooth_curve(y_pos, heights):
         heights_smooth = spl(y_pos_smooth)
         return y_pos_smooth, heights_smooth
     return y_pos, heights
+
+def expand_matrix(m, base):
+    ys = m.shape[0]
+    xs = m.shape[1]
+    for i in range(ys):
+            for j in range(xs):
+                cell = m.item((i, j))
+                if not math.isnan(cell):
+                    # TOP
+                    tuple = (i-1,j)
+                    if i > 0 and math.isnan(m.item(tuple)) and base.item(tuple) != 0:
+                        m.itemset(tuple, base.item(tuple))
+                    # RIGHT
+                    tuple = (i,j+1)
+                    if j < xs-1 and math.isnan(m.item(tuple)) and base.item(tuple) != 0:
+                        m.itemset(tuple, base.item(tuple))
+                    # BOTTOM
+                    tuple = (i+1,j)
+                    if i < ys-1 and math.isnan(m.item(tuple)) and base.item(tuple) != 0:
+                        m.itemset(tuple, base.item(tuple))
+                    # LEFT
+                    tuple = (i,j-1)
+                    if j > 0 and math.isnan(m.item(tuple)) and base.item(tuple) != 0:
+                        m.itemset(tuple, base.item(tuple))
+    return m
+
+
 
 # Attacker -----------------------------------------------
 
