@@ -4,6 +4,7 @@
 import math
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.pyplot import fill, text
 import numpy as np
 from tkinter import *
 import matplotlib
@@ -24,17 +25,17 @@ class App(Frame):
     toolbar = NavigationToolbar2Tk(canvas, window)
     # control panel
     right_frame = Frame(window)
-    slider_frame = Frame(right_frame)
-    button_frame = Frame(right_frame)
-    inner = Scale(slider_frame, from_=10, to=100, orient=HORIZONTAL)
-    outer = Scale(slider_frame, from_=1000, to=100000, resolution=1000, orient=HORIZONTAL)
-    attacker_frame = Frame(right_frame)
-    q = Scale(attacker_frame, from_=0, to=1, resolution=0.02, orient=HORIZONTAL)
-    z = Scale(attacker_frame, from_=100, to=0, orient=HORIZONTAL)
-    values_frame = Frame(right_frame)
+    inner = Scale(right_frame, from_=10, to=100, orient=HORIZONTAL, length=300)
+    outer = Scale(right_frame, from_=1000, to=100000, resolution=1000, orient=HORIZONTAL, length=300)
+    q = Scale(right_frame, from_=0, to=0.5, resolution=0.01, orient=HORIZONTAL, length=300)
+    z = Scale(right_frame, from_=100, to=0, resolution=1, orient=HORIZONTAL, length=300)
+    # success probability labels
+    title = Label(right_frame, text="Success probability results")
+    theory = Label(right_frame, text="Theory:")
+    observation = Label(right_frame, text="Obesrvation:")
     # current dimension (1D or 2D)
     dimension = IntVar()
-    dimension_check = Checkbutton(button_frame, text="2D", variable=dimension, onvalue=1,
+    dimension_check = Checkbutton(right_frame, text="2D", variable=dimension, onvalue=1,
                                   offvalue=0, width=20, height=5)
 
     def __init__(self):
@@ -46,36 +47,31 @@ class App(Frame):
         # build the window and inner frames
         self.window.title("Binomial random walk")
         self.window.geometry("1280x720")
-        self.dimension_check.pack(side=LEFT)
         self.right_frame.pack(side=RIGHT)
-        self.slider_frame.pack()
-        self.attacker_frame.pack()
-        self.values_frame.pack()
-        self.button_frame.pack(side=BOTTOM)
 
         # build the control panel
-        outer_label = Label(self.slider_frame, text="REPEAT")
-        inner_label = Label(self.slider_frame, text="N")
-        self.outer.pack(side=RIGHT, padx=5, pady=5)
-        outer_label.pack(side=RIGHT)
-        self.inner.pack(side=RIGHT)
-        inner_label.pack(side=RIGHT)
-        q_label = Label(self.attacker_frame, text="q")
+        outer_label = Label(self.right_frame, text="REPEAT")
+        inner_label = Label(self.right_frame, text="N")
+        q_label = Label(self.right_frame, text="q")
         self.q.set(0.5)
-        z_label = Label(self.attacker_frame, text="z (%/N)")
+        z_label = Label(self.right_frame, text="z (%/N)")
         self.z.set(0)
-        self.z.pack(side=RIGHT, anchor='e')
-        z_label.pack(side=RIGHT, anchor='e')
-        self.q.pack(side=RIGHT, anchor='w')
-        q_label.pack(side=RIGHT, anchor='w')
-        title = Label(self.values_frame, text="Success probability results")
-        theory = Label(self.values_frame, text="Theory:")
-        observation = Label(self.values_frame, text="Obesrvation:")
-        title.pack(side=TOP, anchor='w')
-        theory.pack(side=TOP, anchor='w')
-        observation.pack(side=TOP, anchor='w')
-        compute_button = Button(command=self.draw, master=self.button_frame, height=2, width=10, text="PLOT")
-        compute_button.pack(side=RIGHT)
+        compute_button = Button(command=self.draw, master=self.right_frame, height=2, width=10, text="PLOT")
+
+        # Grid
+        inner_label.grid(row=0, column=0, sticky=W, pady=2)
+        self.inner.grid(row=0, column=1, sticky=W, pady=2)
+        outer_label.grid(row=1, column=0, sticky=W, pady=2)
+        self.outer.grid(row=1, column=1, sticky=W, pady=2)
+        q_label.grid(row=2, column=0, sticky=W, pady=2)
+        self.q.grid(row=2, column=1, sticky=W, pady=2)
+        z_label.grid(row=3, column=0, sticky=W, pady=2)
+        self.z.grid(row=3, column=1, sticky=W, pady=2)
+        self.title.grid(row=4, column=0, sticky=EW, pady=2, columnspan=2)
+        self.theory.grid(row=5, column=0, sticky=W, pady=2, columnspan=2)
+        self.observation.grid(row=6, column=0, sticky=W, pady=2, columnspan=2)
+        self.dimension_check.grid(row=7, column=0, sticky=EW, pady=2)
+        compute_button.grid(row=7, column=1, sticky=W, pady=2, rowspan=2)
 
         self.window.mainloop()
 
@@ -89,6 +85,9 @@ class App(Frame):
         outer = self.outer.get()
         q = self.q.get()
         z = int(inner * (self.z.get() / 100))
+
+        # update success probability labels
+        self.theory.config(text="Theory: " + str(attacker_success_probability(q, z)))
 
         # reset figure
         self.fig.clear()

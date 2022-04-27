@@ -92,7 +92,7 @@ class RandomWalk:
         :return: the random walk x coordinate
         """
         k = -self._z
-        for i in range(self._inner):
+        for _ in range(self._inner):
             if random.uniform(0, 1) <= self._q:
                 k += 1
             else:
